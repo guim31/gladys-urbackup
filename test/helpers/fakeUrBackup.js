@@ -30,6 +30,7 @@ export class FakeUrBackup {
     this.down = false;
     this.calls = [];
     this.logRight = true;
+    this.admin = true;
     this.startOk = true;
     this.nextId = 1;
     this.request = this.request.bind(this);
@@ -159,6 +160,7 @@ export class FakeUrBackup {
     switch (action) {
       case 'status':
         return ok({
+          admin: this.admin,
           curr_version_str: '2.5.37',
           status: [...this.clients.values()].map((client) => this.statusOf(client)),
           extra_clients: [],

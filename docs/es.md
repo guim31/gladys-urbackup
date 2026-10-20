@@ -166,6 +166,8 @@ Cada disparador puede limitarse a algunos clientes (vacío: todos).
 ## Límites
 
 - Un solo servidor UrBackup por integración.
+- Tras un corte, solo se anuncian las copias terminadas en las últimas 24
+  horas; las más antiguas se registran sin aviso.
 - Una copia se conoce al terminar, por su registro: los disparadores llegan en
   la lectura siguiente (5 minutos por defecto).
 - La integración no restaura, borra ni configura copias: las vigila, e inicia

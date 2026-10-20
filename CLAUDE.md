@@ -275,3 +275,7 @@ md5hex(salt + mdp))`). Utilisateur inconnu : `salt` répond une `ses` **sans `sa
   le client rouvre la session une fois, puis lit un second refus comme un droit manquant (`rights`). Sans
   `logs`, les états restent, sans déclencheurs de sauvegarde (avertissement une fois, nouvel essai toutes les
   heures). Sans `status`, `status: []` : aucun client.
+- Relecture du 20/10 : délai HTTP de 10 s (sous les 30 s des actions Gladys) ; après un lancement depuis Gladys,
+  cadence de 30 s pendant 2 min (UrBackup met un moment à démarrer) ; un journal de plus de 24 h trouvé après une
+  coupure est enregistré sans déclencheur ; un client vu puis supprimé d'UrBackup répond « n'existe plus ».
+- Client arrêté (conteneur stoppé) : le serveur le marque hors ligne au bout de **~5 min** (283 s mesurées).

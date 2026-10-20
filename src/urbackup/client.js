@@ -60,7 +60,9 @@ const LOGS_RETRY_MS = 3_600_000;
  * (test/helpers/fakeUrBackup.js).
  * @returns {Promise<{ status: number, body: string }>}
  */
-export async function httpRequest(address, { body, timeoutMs = 30_000 } = {}) {
+// Below the 30 s Gladys gives an action: a server that drops packets is
+// reported as such, not as a timeout of the action.
+export async function httpRequest(address, { body, timeoutMs = 10_000 } = {}) {
   const response = await fetch(address, {
     method: 'POST',
     headers: {
@@ -71,9 +73,12 @@ export async function httpRequest(address, { body, timeoutMs = 30_000 } = {}) {
     redirect: 'manual',
     signal: AbortSignal.timeout(timeoutMs),
   });
+  if (Number(response.headers.get('content-length')) > MAX_BODY_BYTES) {
+    throw new UrBackupError(ERROR_KINDS.HTTP, 'Response too large');
+  }
   const text = await response.text();
-  if (text.length > MAX_BODY_BYTES) {
-    throw new Error('Response too large');
+  if (Buffer.byteLength(text) > MAX_BODY_BYTES) {
+    throw new UrBackupError(ERROR_KINDS.HTTP, 'Response too large');
   }
   return { status: response.status, body: text };
 }
@@ -123,6 +128,10 @@ export function normalizeClient(item) {
 export function normalizeStatus(data) {
   if (!Array.isArray(data?.status)) {
     throw new UrBackupError(ERROR_KINDS.RIGHTS, 'No client status in the answer (rights?)');
+  }
+  // A user without the status right gets an empty list (and no `admin`).
+  if (data.status.length === 0 && data.admin !== true) {
+    throw new UrBackupError(ERROR_KINDS.RIGHTS, 'Empty client status for a non-admin user');
   }
   return {
     version: typeof data.curr_version_str === 'string' ? data.curr_version_str : null,
@@ -217,6 +226,9 @@ export class UrBackupClient {
         body: new URLSearchParams(params).toString(),
       });
     } catch (err) {
+      if (err instanceof UrBackupError) {
+        throw err;
+      }
       throw new UrBackupError(
         ERROR_KINDS.UNREACHABLE,
         `No answer (${err.cause?.code ?? err.code ?? err.name ?? 'error'})`,

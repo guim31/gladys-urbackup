@@ -171,6 +171,8 @@ Chaque déclencheur peut être limité à certains clients (vide : tous).
 ## Limites
 
 - Un seul serveur UrBackup par intégration.
+- Après une coupure, seules les sauvegardes terminées dans les dernières
+  24 heures sont annoncées ; les plus anciennes sont enregistrées sans bruit.
 - Une sauvegarde est connue à sa fin, par son journal : les déclencheurs
   arrivent à la lecture suivante (5 minutes par défaut).
 - L'intégration ne restaure, ne supprime ni ne configure aucune sauvegarde :

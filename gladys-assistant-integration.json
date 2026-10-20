@@ -477,10 +477,10 @@
         "es": "Un cliente tiene retraso"
       },
       "description": {
-        "en": "A client has had no successful backup for longer than the \"Overdue after\" delay of the configuration.",
-        "fr": "Un client n'a pas eu de sauvegarde réussie depuis plus longtemps que le délai « En retard après » de la configuration.",
-        "de": "Ein Client hatte länger als die Zeit „Überfällig nach“ der Konfiguration keine erfolgreiche Sicherung.",
-        "es": "Un cliente no ha tenido una copia correcta desde hace más que el plazo «Con retraso tras» de la configuración."
+        "en": "A client has had no successful backup for longer than the \"Overdue after\" delay of the configuration (Automatic: UrBackup no longer marks its file backups OK).",
+        "fr": "Un client n'a pas eu de sauvegarde réussie depuis plus longtemps que le délai « En retard après » de la configuration (Automatique : UrBackup ne marque plus ses sauvegardes de fichiers OK).",
+        "de": "Ein Client hatte länger als die Zeit „Überfällig nach“ der Konfiguration keine erfolgreiche Sicherung (Automatisch: UrBackup markiert seine Dateisicherungen nicht mehr als OK).",
+        "es": "Un cliente no ha tenido una copia correcta desde hace más que el plazo «Con retraso tras» de la configuración (Automático: UrBackup ya no marca sus copias de archivos como OK)."
       },
       "fields": [
         {

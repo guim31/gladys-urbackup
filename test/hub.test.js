@@ -376,3 +376,45 @@ test('the internal timer reads UrBackup, every 30 seconds while a backup runs', 
   }
   assert.equal(reads(), before + 1);
 });
+
+test('review fixes: overdue threshold with new credentials, old logs, removed client, start grace', async (t) => {
+  // A new password and a new threshold in one save: no overdue event.
+  const world = await createWorld();
+  t.after(() => world.app.stop());
+  await world.fake.configUpdated(
+    config({ password: PASSWORD, username: USERNAME, overdue_hours: '24', poll_interval: '60' }),
+  );
+  await world.fake.configUpdated(config({ overdue_hours: '12', username: 'admin ' }));
+  await world.hub.pollNow();
+  assert.equal(events(world, TRIGGERS.OVERDUE).length, 0);
+
+  // A backup that ended two days ago, found after an outage: recorded silently.
+  world.urbackup.backup('laptop-anna', 'error', { end: world.clock.time - 48 * HOUR });
+  await world.hub.pollNow();
+  assert.equal(events(world, TRIGGERS.FAILED).length, 0);
+  assert.equal(world.hub.clients.get('1').lastRun.result, 'error');
+
+  // A client removed from UrBackup: said so.
+  const nas = idsOf(world, 'nas').device;
+  world.urbackup.clients.delete(3);
+  world.clock.advance(60_000);
+  const gone = await world.fake.sceneAction('get_backup_status', { device: nas });
+  assert.match(gone.error, /no longer exists/);
+
+  // Just after a start, the 30-second cadence, before UrBackup shows it running.
+  world.urbackup.get('laptop-anna').processes = [];
+  await world.hub.startBackup(world.hub.clients.get('1'));
+  world.urbackup.get('laptop-anna').processes = [];
+  await world.hub.pollNow();
+  assert.equal(world.hub.running, true);
+  world.clock.advance(3 * 60_000);
+  assert.equal(world.hub.running, false);
+});
+
+test('a non-admin user without the status right: an empty list is a right missing', async (t) => {
+  const urbackup = new FakeUrBackup();
+  urbackup.admin = undefined;
+  const world = await createWorld({ urbackup });
+  t.after(() => world.app.stop());
+  assert.match(world.fake.connectionStatus.message.en, /lacks a right/);
+});

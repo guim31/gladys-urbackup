@@ -63,6 +63,10 @@ export const HUB_TIMINGS = {
   heartbeatMs: 12 * 3600_000,
   // A scene action reads UrBackup again when the last read is older.
   freshMs: 15_000,
+  // After a start from Gladys, read every 30 seconds this long, until it runs.
+  startGraceMs: 120_000,
+  // A backup log older than this, found after an outage, is recorded silently.
+  announceWithinMs: 24 * 3600_000,
 };
 
 const MAX_TRANSPORTS_PER_REQUEST = 100;
@@ -126,6 +130,7 @@ export class UrBackupHub {
     this.discovered = null;
     this.saved = { lastLogId: null, clients: {} };
     this.noLogs = false;
+    this.startedUntil = 0;
     this.pollTimer = null;
     this.stopped = false;
     // What fails again at every cycle (Gladys refusing, the reading loop):
@@ -134,7 +139,10 @@ export class UrBackupHub {
   }
 
   get running() {
-    return [...this.clients.values()].some((client) => client.running);
+    // Just after a start from Gladys too: UrBackup takes a moment to begin.
+    return (
+      this.now() < this.startedUntil || [...this.clients.values()].some((client) => client.running)
+    );
   }
 
   // --- Lifecycle -------------------------------------------------------------
@@ -160,6 +168,8 @@ export class UrBackupHub {
 
   async reconfigure(config) {
     const languageChanged = this.signature !== null && this.config.language !== config.language;
+    // Before a new server or password resets the read below.
+    const hadRead = this.readAt !== 0;
     const overdueChanged = this.config.overdueHours !== config.overdueHours;
     this.config = config;
     const signature = JSON.stringify([config.url, config.username, config.password]);
@@ -186,7 +196,7 @@ export class UrBackupHub {
     if (languageChanged) {
       this.discovered = null; // new names for the Discovery tab
     }
-    if (overdueChanged && this.readAt !== 0) {
+    if (overdueChanged && hadRead) {
       // A new threshold is not an event: the clients overdue by it are only recorded.
       for (const saved of Object.values(this.saved.clients)) {
         saved.overdue = null;
@@ -363,6 +373,8 @@ export class UrBackupHub {
       return { byClient, dirty: false };
     }
     const first = last === null || top < last;
+    // After a long outage, only the recent backups are news: no burst of old ones.
+    const since = this.now() - this.timings.announceWithinMs;
     for (const log of logs) {
       if (!first && log.id <= last) {
         continue;
@@ -378,7 +390,7 @@ export class UrBackupHub {
         image: log.image,
         errors: log.errors,
         message: '',
-        announce: !first,
+        announce: !first && (log.time === null || log.time >= since),
       };
       if (run.result === 'error' && run.announce) {
         run.message = await this.logError(client, log.id);
@@ -682,7 +694,11 @@ export class UrBackupHub {
     this.assertReadable();
     const client = this.find(externalId);
     if (!client) {
-      throw new Error(pick(ACTION_TEXT.unknownClient, this.config.language));
+      // One of ours, removed from UrBackup since; or not a client at all.
+      const text = parseClientId(this.gladys, externalId)
+        ? ERROR_TEXT[ERROR_KINDS.NOT_FOUND]
+        : ACTION_TEXT.unknownClient;
+      throw new Error(pick(text, this.config.language));
     }
     return client;
   }
@@ -701,6 +717,7 @@ export class UrBackupHub {
       throw err;
     }
     logger.info(`${view.name}: file backup started from Gladys`);
+    this.startedUntil = this.now() + this.timings.startGraceMs;
     // Read again in the background; every 30 seconds once it runs.
     (this.polling ?? Promise.resolve())
       .catch(() => {})

@@ -169,6 +169,8 @@ Jeder Auslöser lässt sich auf einige Clients beschränken (leer: alle).
 ## Grenzen
 
 - Ein UrBackup-Server pro Integration.
+- Nach einem Ausfall werden nur die Sicherungen der letzten 24 Stunden
+  gemeldet; ältere werden still erfasst.
 - Eine Sicherung ist an ihrem Ende bekannt, über ihr Protokoll: Die Auslöser
   kommen beim nächsten Lesen (standardmäßig 5 Minuten).
 - Die Integration überwacht die Sicherungen und startet, wenn erlaubt,

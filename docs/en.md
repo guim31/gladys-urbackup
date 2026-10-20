@@ -158,6 +158,8 @@ Each trigger can be limited to some clients (empty: any).
 ## Limits
 
 - One UrBackup server per integration.
+- After an outage, only the backups ended in the last 24 hours are
+  announced; the older ones are recorded silently.
 - A backup is known when it ends, by its log: the triggers come at the next
   reading (5 minutes by default).
 - The integration does not restore, delete or configure backups: it watches
