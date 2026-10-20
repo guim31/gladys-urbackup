@@ -10,6 +10,8 @@ the notes of the version's GitHub Release.
 
 ## [Unreleased]
 
+## [1.0.0] - 2026-10-20
+
 ### Added
 
 - The clients of an UrBackup server in Gladys: one device per client (state,
@@ -27,4 +29,5 @@ the notes of the version's GitHub Release.
   without users; "Test the connection"; texts and documentation in English,
   French, German and Spanish.
 
-[Unreleased]: https://github.com/guim31/gladys-urbackup/commits/main
+[Unreleased]: https://github.com/guim31/gladys-urbackup/compare/v1.0.0...HEAD
+[1.0.0]: https://github.com/guim31/gladys-urbackup/releases/tag/v1.0.0
