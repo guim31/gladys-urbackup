@@ -1,0 +1,6 @@
+{
+  "pbkdf2_rounds": 10000,
+  "rnd": "RndForTest",
+  "salt": "abcdefghij0123456789",
+  "ses": "SessionTokenForTests0123456789"
+}

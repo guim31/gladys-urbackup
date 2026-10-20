@@ -1,0 +1,85 @@
+{
+  "HAS_MAIL_START": "",
+  "HAS_MAIL_STOP": "",
+  "all_clients": true,
+  "can_report_script_edit": true,
+  "clients": [
+    {
+      "id": 1,
+      "name": "laptop-anna"
+    }
+  ],
+  "filter": "",
+  "has_user": true,
+  "ll": 0,
+  "log_right_clients": [
+    {
+      "id": 1,
+      "name": "laptop-anna"
+    },
+    {
+      "id": 2,
+      "name": "nas-bob"
+    }
+  ],
+  "logs": [
+    {
+      "errors": 0,
+      "id": 5,
+      "image": 0,
+      "incremental": 0,
+      "name": "laptop-anna",
+      "restore": 0,
+      "resumed": 0,
+      "time": 1792490549,
+      "warnings": 0
+    },
+    {
+      "errors": 0,
+      "id": 4,
+      "image": 0,
+      "incremental": 0,
+      "name": "laptop-anna",
+      "restore": 0,
+      "resumed": 0,
+      "time": 1792490030,
+      "warnings": 0
+    },
+    {
+      "errors": 2,
+      "id": 3,
+      "image": 0,
+      "incremental": 1,
+      "name": "laptop-anna",
+      "restore": 0,
+      "resumed": 0,
+      "time": 1792489849,
+      "warnings": 0
+    },
+    {
+      "errors": 0,
+      "id": 2,
+      "image": 0,
+      "incremental": 1,
+      "name": "laptop-anna",
+      "restore": 0,
+      "resumed": 0,
+      "time": 1792489831,
+      "warnings": 0
+    },
+    {
+      "errors": 0,
+      "id": 1,
+      "image": 0,
+      "incremental": 0,
+      "name": "laptop-anna",
+      "restore": 0,
+      "resumed": 0,
+      "time": 1792489819,
+      "warnings": 0
+    }
+  ],
+  "report_loglevel": "",
+  "report_mail": "",
+  "report_sendonly": ""
+}

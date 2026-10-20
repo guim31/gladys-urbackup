@@ -1,0 +1,9 @@
+{
+  "result": [
+    {
+      "clientid": 1,
+      "start_ok": true,
+      "start_type": "incr_file"
+    }
+  ]
+}

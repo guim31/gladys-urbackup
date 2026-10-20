@@ -1,0 +1,22 @@
+{
+  "all_clients": true,
+  "clients": [
+    {
+      "id": 1,
+      "name": "laptop-anna"
+    }
+  ],
+  "filter": "",
+  "has_user": true,
+  "log": {
+    "clientname": "laptop-anna",
+    "data": "2-1792489849-Cannot create directory /backups/laptop-anna/261020-0950 for backup (server error). File exists (code: 17)\n0-1792489849-Time taken for backing up client laptop-anna: 1ms\n2-1792489849-Backup failed\n",
+    "time": 1792489849
+  },
+  "log_right_clients": [
+    {
+      "id": 1,
+      "name": "laptop-anna"
+    }
+  ]
+}
