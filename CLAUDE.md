@@ -31,16 +31,21 @@ pushing.
 ## Architecture
 
 ```
-index.js                          SDK wiring only: handlers registered before connect()
-src/devices/index.js              registry of the device blueprints + dispatch helpers
-src/devices/<type>.js             one device type per file (buildDevice, onPoll, onSetValue...)
+index.js                          SDK wiring only (src/app.js), shutdown
+src/app.js                        every SDK handler registered on the hub (the tests use it too)
+src/hub.js                        reading timer, client views, states, scene events, transports, status
+src/urbackup/client.js            UrBackup web API: salted login (md5/PBKDF2), session, status, progress, logs, start_backup
+src/devices.js                    device blueprints, feature names (4 languages), states, overdue rule
 src/scenes.js                     scene action handlers (manifest `scene_actions`)
-src/widgets.js                    dashboard widget handlers (manifest `widgets`)
+src/widgets.js                    dashboard widget (manifest `widgets`)
+src/texts.js                      every text sent to Gladys outside the widget, 4 languages
+src/store.js                      /data/urbackup-state.json: last log seen, last backup per client, overdue or not
+src/problems.js                   one log line when a repeated failure starts, one when it ends
 src/config.js                     DEFAULT_CONFIG (mirrors the manifest defaults) + normalization
-src/weather.js                    example driver (Open-Meteo)
 gladys-assistant-integration.json manifest: name, config_schema, actions, image...
-docs/en.md, docs/fr.md            user documentation, re-hosted by Gladys (mandatory)
-test/                             node --test, against the SDK's fake Gladys (integration-sdk/testing)
+docs/{en,fr,de,es}.md             user documentation, re-hosted by Gladys (mandatory, same sections)
+test/                             node --test, against the SDK's fake Gladys and test/helpers/fakeUrBackup.js
+test/fixtures/urbackup/           real answers of UrBackup server 2.5.37 (Docker), anonymized
 .github/scripts/release.mjs       release helpers (manifest bump, changelog), tested in test/
 ```
 
@@ -70,8 +75,9 @@ test/                             node --test, against the SDK's fake Gladys (in
   `type: "provider"`: 5.1.0). `test/manifest.test.js` ties the manifest to the
   code (defaults, action, scene and widget handlers): change both sides
   together.
-- **User-facing text** is bilingual (English and French): action messages,
-  manifest texts, and `docs/en.md` / `docs/fr.md`, kept in sync.
+- **User-facing text** exists in English, French, German ("du") and Spanish
+  ("usted"): action messages, manifest texts, widget, feature names, and
+  `docs/{en,fr,de,es}.md`, kept in sync. `test/i18n.test.js` checks it.
 - **Style.** Prettier formats, ESLint catches mistakes. Comments explain why,
   in English. Tests never touch the network.
 
@@ -233,3 +239,43 @@ long, et sur un « Sie »/« Ihr… » de politesse en allemand. Le store exige 
 - Docs `en`, `fr`, `de`, `es` avec les mêmes sections.
 - Chauffe, ouverture, sécurité : ne rien rendre pilotable « comme un thermostat » ou par un assistant
   vocal quand une erreur serait dangereuse (leçon d'OctoPrint).
+
+## UrBackup (propre à ce dépôt)
+
+Vérifié sur un vrai **serveur UrBackup 2.5.37** (image `uroni/urbackup-server`) et un **client 2.5.31**
+(`uroni/urbackup-client`, en mode Internet avec la clé donnée par `add_client`), le 20/10/2026, réseau en pont dédié :
+
+- **API** : `POST /x?a=<action>`, corps `application/x-www-form-urlencoded`, réponse JSON. Le paramètre `ses`
+  porte la session. Session inconnue (serveur redémarré) : `{"error":1}` → nouvelle connexion, une fois.
+- **Connexion** : d'abord `a=login` sans rien. Sans aucun utilisateur défini, `success: true` et `session` :
+  tout le monde est admin. Sinon `{"admin_only":"admin","success":false}`, puis `a=salt&username=` →
+  `{ses, salt, rnd, pbkdf2_rounds}` (10000 en 2.5) et `a=login` avec `username`, `ses` et
+  `password = md5(rnd + hex(pbkdf2_sha256(md5(salt + mdp) binaire, salt, rounds)))` (sans tours : `md5(rnd +
+md5hex(salt + mdp))`). Utilisateur inconnu : `salt` répond une `ses` **sans `salt`**. Mauvais mot de passe :
+  `{"api_version":2,"error":2}`. Pendant la mise à niveau de la base au premier démarrage (une minute) :
+  `upgrading_database: true`.
+- `a=status` : `status[]` par client : `id` (entier, stable : identifiant Gladys), `name`, `online`,
+  `lastbackup` / `lastbackup_image` (secondes, **0 = jamais**), `file_ok` / `image_ok` (verdict d'UrBackup
+  selon l'intervalle de ses réglages : c'est le « en retard » automatique), `image_not_supported` (Linux),
+  `processes[] {action, pcdone}` (pcdone -1 tant qu'inconnu ; action 1/2 fichiers, 3/4 image), `ip`, `uid`.
+  Un client ajouté et jamais connecté : `online: false`, `lastbackup: 0`.
+- **Un journal (`a=logs`, `ll=0`) n'apparaît qu'à la fin d'une sauvegarde** (rien pendant), avec `errors` et
+  `warnings`, sans `clientid` (seulement `name`). Une sauvegarde **échouée n'a pas d'activité** (`lastacts`)
+  et ne change pas `lastbackup` : son journal (`errors` > 0) est la seule trace. D'où la règle des
+  déclencheurs : un journal plus récent que le dernier vu (`lastLogId` dans `/data`) est une sauvegarde
+  terminée, en échec si `errors` > 0. Détail d'un journal : `a=logs&logid=N` → `log.data`, lignes
+  `niveau-heure-message` (niveau 2 = erreur, la dernière est « Backup failed »).
+- `a=progress` : `progress[]` (sauvegardes en cours) et `lastacts[]` (`backuptime` = **début**, `duration`
+  en **secondes**, `size_bytes` transférés, `image`, `incremental`, `del`, `restore`).
+- `a=start_backup&start_client=<id>&start_type=incr_file` → `result[0].start_ok` ; `false` pour un client hors
+  ligne. Deux sauvegardes lancées dans la même minute : la seconde échoue (« Cannot create directory … File
+  exists »), vu sur le vrai serveur.
+- Droits d'un utilisateur dédié (domaines de l'interface, vérifiés sur le vrai serveur) : `status`, `progress`,
+  `lastacts`, `logs`, `start_backup`. **Un droit manquant répond `{"error":1}`, comme une session inconnue** :
+  le client rouvre la session une fois, puis lit un second refus comme un droit manquant (`rights`). Sans
+  `logs`, les états restent, sans déclencheurs de sauvegarde (avertissement une fois, nouvel essai toutes les
+  heures). Sans `status`, `status: []` : aucun client.
+- Relecture du 20/10 : délai HTTP de 10 s (sous les 30 s des actions Gladys) ; après un lancement depuis Gladys,
+  cadence de 30 s pendant 2 min (UrBackup met un moment à démarrer) ; un journal de plus de 24 h trouvé après une
+  coupure est enregistré sans déclencheur ; un client vu puis supprimé d'UrBackup répond « n'existe plus ».
+- Client arrêté (conteneur stoppé) : le serveur le marque hors ligne au bout de **~5 min** (283 s mesurées).

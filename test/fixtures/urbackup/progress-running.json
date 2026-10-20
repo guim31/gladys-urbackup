@@ -1,0 +1,67 @@
+{
+  "lastacts": [
+    {
+      "backuptime": 1792489961,
+      "clientid": 1,
+      "del": false,
+      "details": "",
+      "duration": 2,
+      "id": 3,
+      "image": 0,
+      "incremental": 0,
+      "name": "laptop-anna",
+      "restore": 0,
+      "resumed": 0,
+      "size_bytes": 300000006
+    },
+    {
+      "backuptime": 1792489822,
+      "clientid": 1,
+      "del": false,
+      "details": "",
+      "duration": 1,
+      "id": 2,
+      "image": 0,
+      "incremental": 1,
+      "name": "laptop-anna",
+      "restore": 0,
+      "resumed": 0,
+      "size_bytes": 0
+    },
+    {
+      "backuptime": 1792489749,
+      "clientid": 1,
+      "del": false,
+      "details": "",
+      "duration": 1,
+      "id": 1,
+      "image": 0,
+      "incremental": 0,
+      "name": "laptop-anna",
+      "restore": 0,
+      "resumed": 0,
+      "size_bytes": 1000006
+    }
+  ],
+  "progress": [
+    {
+      "action": 2,
+      "can_show_backup_log": true,
+      "can_stop_backup": true,
+      "clientid": 1,
+      "detail_pc": -1,
+      "details": "0",
+      "done_bytes": 0,
+      "eta_ms": -22021,
+      "id": 6,
+      "logid": 8,
+      "name": "laptop-anna",
+      "past_speed_bpms": [0],
+      "paused": false,
+      "pcdone": 0,
+      "queue": 0,
+      "speed_bpms": 0,
+      "total_bytes": 301000006
+    }
+  ]
+}

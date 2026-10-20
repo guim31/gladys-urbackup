@@ -1,177 +1,715 @@
 {
   "manifest_version": 1,
   "type": "device",
-  "name": "Demo Devices Template",
+  "name": "UrBackup",
   "description": {
-    "en": "Starter template showing sensors, a switch, a dimmable light and a smart plug.",
-    "fr": "Template de démarrage : capteurs, interrupteur, lampe variable et prise connectée."
+    "en": "Your UrBackup clients in Gladys: online, last backups, an alert when one fails or is late.",
+    "fr": "Vos clients UrBackup dans Gladys : en ligne, dernières sauvegardes, alerte si échec ou retard.",
+    "de": "Deine UrBackup-Clients in Gladys: online, letzte Sicherungen, ein Alarm bei Fehler oder Verzug.",
+    "es": "Sus clientes de UrBackup en Gladys: en línea, últimas copias y una alerta si una falla o se retrasa."
   },
   "version": "1.0.0",
-  "docker_image": "ghcr.io/gladysassistant/integration-template-js:1.0.0",
+  "docker_image": "ghcr.io/guim31/gladys-urbackup:1.0.0",
   "gladys_version": ">=5.1.0",
-  "cover_image": "https://raw.githubusercontent.com/GladysAssistant/integration-template-js/master/cover.png",
-  "categories": ["lighting", "security", "environment"],
-  "transports": ["local", "cloud"],
+  "cover_image": "https://raw.githubusercontent.com/guim31/gladys-urbackup/main/cover.png",
+  "categories": ["services", "network"],
+  "transports": ["local"],
   "config_schema": [
     {
       "key": "intro",
       "type": "section",
-      "label": { "en": "Getting started", "fr": "Pour commencer" },
+      "label": {
+        "en": "Your UrBackup server",
+        "fr": "Votre serveur UrBackup",
+        "de": "Dein UrBackup-Server",
+        "es": "Su servidor UrBackup"
+      },
       "description": {
-        "en": "The demo weather station reads real data from the free Open-Meteo API: pick the coordinates to observe. No account, no API key.",
-        "fr": "La station météo de démonstration lit de vraies données via l'API gratuite Open-Meteo : choisissez les coordonnées à observer. Pas de compte, pas de clé d'API."
+        "en": "The web interface of the UrBackup server (port 55414). Enter its address and a user of that interface, then add the clients to follow from the Discover tab.",
+        "fr": "L'interface web du serveur UrBackup (port 55414). Saisissez son adresse et un utilisateur de cette interface, puis ajoutez les clients à suivre depuis l'onglet Découverte.",
+        "de": "Die Weboberfläche des UrBackup-Servers (Port 55414). Gib ihre Adresse und einen Benutzer dieser Oberfläche ein und lege dann die Clients im Tab „Entdecken“ an.",
+        "es": "La interfaz web del servidor UrBackup (puerto 55414). Introduzca su dirección y un usuario de esa interfaz, y después añada los clientes desde la pestaña Descubrir."
       },
       "links": [
         {
-          "url": "https://open-meteo.com/en/docs",
-          "label": { "en": "Open-Meteo documentation", "fr": "Documentation Open-Meteo" }
+          "url": "https://github.com/guim31/gladys-urbackup/blob/main/docs/en.md",
+          "label": {
+            "en": "Setup guide",
+            "fr": "Guide d'installation",
+            "de": "Einrichtungsanleitung",
+            "es": "Guía de instalación"
+          }
+        },
+        {
+          "url": "https://www.urbackup.org/administration_manual.html",
+          "label": {
+            "en": "UrBackup administration manual",
+            "fr": "Manuel d'administration d'UrBackup",
+            "de": "UrBackup-Administrationshandbuch",
+            "es": "Manual de administración de UrBackup"
+          }
         }
       ]
     },
     {
-      "key": "latitude",
-      "type": "number",
-      "label": { "en": "Latitude", "fr": "Latitude" },
-      "description": {
-        "en": "Latitude used for the demo weather sensor.",
-        "fr": "Latitude utilisée par le capteur météo de démonstration."
+      "key": "url",
+      "type": "string",
+      "label": {
+        "en": "UrBackup address",
+        "fr": "Adresse d'UrBackup",
+        "de": "UrBackup-Adresse",
+        "es": "Dirección de UrBackup"
       },
-      "placeholder": { "en": "e.g. 48.8566", "fr": "ex. 48.8566" },
-      "required": true,
-      "default": 48.8566,
-      "min": -90,
-      "max": 90
+      "description": {
+        "en": "The address of the web interface, port 55414 by default. https:// behind a reverse proxy.",
+        "fr": "L'adresse de l'interface web, port 55414 par défaut. En https:// derrière un proxy inverse.",
+        "de": "Die Adresse der Weboberfläche, standardmäßig Port 55414. https:// hinter einem Reverse-Proxy.",
+        "es": "La dirección de la interfaz web, puerto 55414 por defecto. https:// detrás de un proxy inverso."
+      },
+      "placeholder": {
+        "en": "e.g. http://192.168.1.2:55414",
+        "fr": "ex. http://192.168.1.2:55414",
+        "de": "z. B. http://192.168.1.2:55414",
+        "es": "p. ej. http://192.168.1.2:55414"
+      },
+      "required": true
     },
     {
-      "key": "longitude",
-      "type": "number",
-      "label": { "en": "Longitude", "fr": "Longitude" },
-      "description": {
-        "en": "Longitude used for the demo weather sensor.",
-        "fr": "Longitude utilisée par le capteur météo de démonstration."
+      "key": "username",
+      "type": "string",
+      "label": {
+        "en": "Username",
+        "fr": "Nom d'utilisateur",
+        "de": "Benutzername",
+        "es": "Usuario"
       },
-      "placeholder": { "en": "e.g. 2.3522", "fr": "ex. 2.3522" },
-      "required": true,
-      "default": 2.3522,
-      "min": -180,
-      "max": 180
-    },
-    {
-      "key": "unit",
-      "type": "select",
-      "label": { "en": "Temperature unit", "fr": "Unité de température" },
+      "description": {
+        "en": "A user of the web interface (Settings → Users), admin or with the rights status, progress, lastacts, logs and start_backup.",
+        "fr": "Un utilisateur de l'interface web (Paramètres → Utilisateurs), admin ou avec les droits status, progress, lastacts, logs et start_backup.",
+        "de": "Ein Benutzer der Weboberfläche (Einstellungen → Benutzer), Admin oder mit den Rechten status, progress, lastacts, logs und start_backup.",
+        "es": "Un usuario de la interfaz web (Ajustes → Usuarios), admin o con los permisos status, progress, lastacts, logs y start_backup."
+      },
       "required": false,
-      "default": "celsius",
+      "default": "admin"
+    },
+    {
+      "key": "password",
+      "type": "secret",
+      "label": {
+        "en": "Password",
+        "fr": "Mot de passe",
+        "de": "Passwort",
+        "es": "Contraseña"
+      },
+      "description": {
+        "en": "Its password. Empty for a server without any user (not recommended).",
+        "fr": "Son mot de passe. Vide pour un serveur sans aucun utilisateur (déconseillé).",
+        "de": "Sein Passwort. Leer bei einem Server ganz ohne Benutzer (nicht empfohlen).",
+        "es": "Su contraseña. Vacía para un servidor sin ningún usuario (no recomendado)."
+      },
+      "required": false
+    },
+    {
+      "key": "options",
+      "type": "section",
+      "label": {
+        "en": "Options",
+        "fr": "Options",
+        "de": "Optionen",
+        "es": "Opciones"
+      }
+    },
+    {
+      "key": "poll_interval",
+      "type": "select",
+      "label": {
+        "en": "Refresh interval",
+        "fr": "Intervalle de rafraîchissement",
+        "de": "Aktualisierungsintervall",
+        "es": "Intervalo de actualización"
+      },
+      "description": {
+        "en": "How often UrBackup is read. Every 30 seconds while a backup runs.",
+        "fr": "À quelle fréquence UrBackup est lu. Toutes les 30 secondes pendant une sauvegarde.",
+        "de": "Wie oft UrBackup gelesen wird. Alle 30 Sekunden während einer Sicherung.",
+        "es": "Con qué frecuencia se lee UrBackup. Cada 30 segundos durante una copia."
+      },
+      "required": false,
+      "default": "300",
       "options": [
-        { "value": "celsius", "label": { "en": "Celsius", "fr": "Celsius" } },
-        { "value": "fahrenheit", "label": { "en": "Fahrenheit", "fr": "Fahrenheit" } }
+        {
+          "value": "60",
+          "label": {
+            "en": "1 minute",
+            "fr": "1 minute",
+            "de": "1 Minute",
+            "es": "1 minuto"
+          }
+        },
+        {
+          "value": "300",
+          "label": {
+            "en": "5 minutes",
+            "fr": "5 minutes",
+            "de": "5 Minuten",
+            "es": "5 minutos"
+          }
+        },
+        {
+          "value": "900",
+          "label": {
+            "en": "15 minutes",
+            "fr": "15 minutes",
+            "de": "15 Minuten",
+            "es": "15 minutos"
+          }
+        }
       ]
     },
     {
-      "key": "poll_frequency",
-      "type": "number",
-      "label": { "en": "Refresh interval (s)", "fr": "Intervalle de rafraîchissement (s)" },
+      "key": "overdue_hours",
+      "type": "select",
+      "label": {
+        "en": "Overdue after",
+        "fr": "En retard après",
+        "de": "Überfällig nach",
+        "es": "Con retraso tras"
+      },
       "description": {
-        "en": "How often sensors are polled, in seconds (one minute minimum).",
-        "fr": "Fréquence d'interrogation des capteurs, en secondes (une minute minimum)."
+        "en": "A client without a successful backup for this long is overdue. Automatic: as UrBackup says, from the file backup interval of its settings.",
+        "fr": "Un client sans sauvegarde réussie depuis ce délai est en retard. Automatique : selon UrBackup, d'après l'intervalle des sauvegardes de fichiers de ses paramètres.",
+        "de": "Ein Client ohne erfolgreiche Sicherung seit dieser Zeit ist überfällig. Automatisch: wie UrBackup es sagt, nach dem Intervall der Dateisicherungen seiner Einstellungen.",
+        "es": "Un cliente sin copia correcta desde hace este tiempo tiene retraso. Automático: según UrBackup, por el intervalo de copias de archivos de sus ajustes."
       },
       "required": false,
-      "default": 300,
-      "min": 60,
-      "max": 3600
+      "default": "auto",
+      "options": [
+        {
+          "value": "auto",
+          "label": {
+            "en": "Automatic (UrBackup's verdict)",
+            "fr": "Automatique (selon UrBackup)",
+            "de": "Automatisch (laut UrBackup)",
+            "es": "Automático (según UrBackup)"
+          }
+        },
+        {
+          "value": "12",
+          "label": {
+            "en": "12 hours",
+            "fr": "12 heures",
+            "de": "12 Stunden",
+            "es": "12 horas"
+          }
+        },
+        {
+          "value": "24",
+          "label": {
+            "en": "24 hours",
+            "fr": "24 heures",
+            "de": "24 Stunden",
+            "es": "24 horas"
+          }
+        },
+        {
+          "value": "48",
+          "label": {
+            "en": "2 days",
+            "fr": "2 jours",
+            "de": "2 Tage",
+            "es": "2 días"
+          }
+        },
+        {
+          "value": "72",
+          "label": {
+            "en": "3 days",
+            "fr": "3 jours",
+            "de": "3 Tage",
+            "es": "3 días"
+          }
+        },
+        {
+          "value": "168",
+          "label": {
+            "en": "1 week",
+            "fr": "1 semaine",
+            "de": "1 Woche",
+            "es": "1 semana"
+          }
+        }
+      ]
+    },
+    {
+      "key": "allow_start",
+      "type": "boolean",
+      "label": {
+        "en": "Allow starting backups",
+        "fr": "Autoriser le lancement des sauvegardes",
+        "de": "Starten von Sicherungen erlauben",
+        "es": "Permitir iniciar copias"
+      },
+      "description": {
+        "en": "Lets the scene action \"Start a file backup\" start an incremental file backup in UrBackup.",
+        "fr": "Permet à l'action de scène « Lancer une sauvegarde de fichiers » de lancer une sauvegarde de fichiers incrémentale dans UrBackup.",
+        "de": "Erlaubt der Szenenaktion „Dateisicherung starten“, eine inkrementelle Dateisicherung in UrBackup zu starten.",
+        "es": "Permite que la acción de escena «Iniciar una copia de archivos» inicie una copia incremental de archivos en UrBackup."
+      },
+      "required": false,
+      "default": true
+    },
+    {
+      "key": "language",
+      "type": "select",
+      "label": {
+        "en": "Language of the names",
+        "fr": "Langue des noms",
+        "de": "Sprache der Namen",
+        "es": "Idioma de los nombres"
+      },
+      "description": {
+        "en": "Language of the feature names (set when a device is added), of the states and of the scene results.",
+        "fr": "Langue des noms des fonctionnalités (fixés à l'ajout d'un appareil), des états et des résultats de scène.",
+        "de": "Sprache der Funktionsnamen (beim Anlegen eines Geräts festgelegt), der Zustände und der Szenen-Ergebnisse.",
+        "es": "Idioma de los nombres de las funciones (fijados al añadir un dispositivo), de los estados y de los resultados de escena."
+      },
+      "required": false,
+      "default": "fr",
+      "options": [
+        {
+          "value": "en",
+          "label": {
+            "en": "English",
+            "fr": "Anglais",
+            "de": "Englisch",
+            "es": "Inglés"
+          }
+        },
+        {
+          "value": "fr",
+          "label": {
+            "en": "French",
+            "fr": "Français",
+            "de": "Französisch",
+            "es": "Francés"
+          }
+        },
+        {
+          "value": "de",
+          "label": {
+            "en": "German",
+            "fr": "Allemand",
+            "de": "Deutsch",
+            "es": "Alemán"
+          }
+        },
+        {
+          "value": "es",
+          "label": {
+            "en": "Spanish",
+            "fr": "Espagnol",
+            "de": "Spanisch",
+            "es": "Español"
+          }
+        }
+      ]
     }
   ],
   "actions": [
     {
-      "key": "test_weather",
-      "label": { "en": "Test the weather provider", "fr": "Tester le fournisseur météo" },
+      "key": "test_connection",
+      "label": {
+        "en": "Test the connection",
+        "fr": "Tester la connexion",
+        "de": "Verbindung testen",
+        "es": "Probar la conexión"
+      },
       "timeout_seconds": 30
-    },
-    {
-      "key": "identify",
-      "label": { "en": "Identify a device", "fr": "Identifier un appareil" },
-      "fields": [
-        {
-          "key": "device",
-          "type": "select",
-          "source": "devices",
-          "label": { "en": "Device", "fr": "Appareil" },
-          "required": true
-        }
-      ]
     }
   ],
   "scene_triggers": [
     {
-      "key": "motion_detected",
-      "label": { "en": "Motion detected", "fr": "Mouvement détecté" },
+      "key": "backup_succeeded",
+      "label": {
+        "en": "A backup succeeds",
+        "fr": "Une sauvegarde réussit",
+        "de": "Eine Sicherung gelingt",
+        "es": "Una copia se completa"
+      },
       "description": {
-        "en": "A demo motion sensor saw a person or an animal move.",
-        "fr": "Un détecteur de démonstration a vu bouger une personne ou un animal."
+        "en": "An UrBackup backup (files or image) ends without error.",
+        "fr": "Une sauvegarde UrBackup (fichiers ou image) se termine sans erreur.",
+        "de": "Eine UrBackup-Sicherung (Dateien oder Image) endet ohne Fehler.",
+        "es": "Una copia de UrBackup (archivos o imagen) termina sin errores."
       },
       "fields": [
         {
           "key": "device",
-          "type": "select",
-          "source": "devices",
-          "label": { "en": "Sensor", "fr": "Détecteur" }
-        },
-        {
-          "key": "target",
           "type": "multi_select",
-          "label": { "en": "What moved", "fr": "Ce qui a bougé" },
-          "options": [
-            { "value": "person", "label": { "en": "Person", "fr": "Personne" } },
-            { "value": "animal", "label": { "en": "Animal", "fr": "Animal" } }
-          ]
+          "source": "devices",
+          "label": {
+            "en": "Clients (empty: any)",
+            "fr": "Clients (vide : tous)",
+            "de": "Clients (leer: alle)",
+            "es": "Clientes (vacío: todos)"
+          }
         }
       ],
       "variables": [
         {
-          "key": "target",
+          "key": "client",
           "type": "string",
-          "label": { "en": "What moved", "fr": "Ce qui a bougé" }
+          "label": {
+            "en": "Client",
+            "fr": "Client",
+            "de": "Client",
+            "es": "Cliente"
+          }
+        },
+        {
+          "key": "kind",
+          "type": "string",
+          "label": {
+            "en": "Kind (files, image)",
+            "fr": "Type (fichiers, image)",
+            "de": "Art (Dateien, Image)",
+            "es": "Tipo (archivos, imagen)"
+          }
+        },
+        {
+          "key": "duration_minutes",
+          "type": "number",
+          "label": {
+            "en": "Duration (minutes)",
+            "fr": "Durée (minutes)",
+            "de": "Dauer (Minuten)",
+            "es": "Duración (minutos)"
+          }
+        },
+        {
+          "key": "size",
+          "type": "string",
+          "label": {
+            "en": "Size transferred",
+            "fr": "Taille transférée",
+            "de": "Übertragene Größe",
+            "es": "Tamaño transferido"
+          }
+        }
+      ]
+    },
+    {
+      "key": "backup_failed",
+      "label": {
+        "en": "A backup fails",
+        "fr": "Une sauvegarde échoue",
+        "de": "Eine Sicherung schlägt fehl",
+        "es": "Una copia falla"
+      },
+      "description": {
+        "en": "An UrBackup backup ends with errors in its log, or fails.",
+        "fr": "Une sauvegarde UrBackup se termine avec des erreurs dans son journal, ou échoue.",
+        "de": "Eine UrBackup-Sicherung endet mit Fehlern im Protokoll oder schlägt fehl.",
+        "es": "Una copia de UrBackup termina con errores en su registro, o falla."
+      },
+      "fields": [
+        {
+          "key": "device",
+          "type": "multi_select",
+          "source": "devices",
+          "label": {
+            "en": "Clients (empty: any)",
+            "fr": "Clients (vide : tous)",
+            "de": "Clients (leer: alle)",
+            "es": "Clientes (vacío: todos)"
+          }
+        }
+      ],
+      "variables": [
+        {
+          "key": "client",
+          "type": "string",
+          "label": {
+            "en": "Client",
+            "fr": "Client",
+            "de": "Client",
+            "es": "Cliente"
+          }
+        },
+        {
+          "key": "kind",
+          "type": "string",
+          "label": {
+            "en": "Kind (files, image)",
+            "fr": "Type (fichiers, image)",
+            "de": "Art (Dateien, Image)",
+            "es": "Tipo (archivos, imagen)"
+          }
+        },
+        {
+          "key": "message",
+          "type": "string",
+          "label": {
+            "en": "First error",
+            "fr": "Première erreur",
+            "de": "Erster Fehler",
+            "es": "Primer error"
+          }
+        },
+        {
+          "key": "errors",
+          "type": "number",
+          "label": {
+            "en": "Errors",
+            "fr": "Erreurs",
+            "de": "Fehler",
+            "es": "Errores"
+          }
+        }
+      ]
+    },
+    {
+      "key": "backup_overdue",
+      "label": {
+        "en": "A client is overdue",
+        "fr": "Un client est en retard",
+        "de": "Ein Client ist überfällig",
+        "es": "Un cliente tiene retraso"
+      },
+      "description": {
+        "en": "A client has had no successful backup for longer than the \"Overdue after\" delay of the configuration (Automatic: UrBackup no longer marks its file backups OK).",
+        "fr": "Un client n'a pas eu de sauvegarde réussie depuis plus longtemps que le délai « En retard après » de la configuration (Automatique : UrBackup ne marque plus ses sauvegardes de fichiers OK).",
+        "de": "Ein Client hatte länger als die Zeit „Überfällig nach“ der Konfiguration keine erfolgreiche Sicherung (Automatisch: UrBackup markiert seine Dateisicherungen nicht mehr als OK).",
+        "es": "Un cliente no ha tenido una copia correcta desde hace más que el plazo «Con retraso tras» de la configuración (Automático: UrBackup ya no marca sus copias de archivos como OK)."
+      },
+      "fields": [
+        {
+          "key": "device",
+          "type": "multi_select",
+          "source": "devices",
+          "label": {
+            "en": "Clients (empty: any)",
+            "fr": "Clients (vide : tous)",
+            "de": "Clients (leer: alle)",
+            "es": "Clientes (vacío: todos)"
+          }
+        }
+      ],
+      "variables": [
+        {
+          "key": "client",
+          "type": "string",
+          "label": {
+            "en": "Client",
+            "fr": "Client",
+            "de": "Client",
+            "es": "Cliente"
+          }
+        },
+        {
+          "key": "hours_since_success",
+          "type": "number",
+          "label": {
+            "en": "Hours since last success",
+            "fr": "Heures depuis la dernière réussite",
+            "de": "Stunden seit letztem Erfolg",
+            "es": "Horas desde el último éxito"
+          }
+        },
+        {
+          "key": "last_success",
+          "type": "string",
+          "label": {
+            "en": "Last success",
+            "fr": "Dernière réussite",
+            "de": "Letzter Erfolg",
+            "es": "Último éxito"
+          }
         }
       ]
     }
   ],
   "scene_actions": [
     {
-      "key": "identify_device",
-      "label": { "en": "Identify a device", "fr": "Identifier un appareil" },
-      "description": {
-        "en": "Make a device signal itself (the demo light blinks).",
-        "fr": "Fait se signaler un appareil (la lampe de démonstration clignote)."
+      "key": "get_backup_status",
+      "label": {
+        "en": "State of a client",
+        "fr": "État d'un client",
+        "de": "Zustand eines Clients",
+        "es": "Estado de un cliente"
       },
-      "timeout_seconds": 15,
+      "description": {
+        "en": "Reads the state of an UrBackup client for the next actions: failed, overdue, online, in words, and a ready-made sentence.",
+        "fr": "Lit l'état d'un client UrBackup pour les actions suivantes : en échec, en retard, en ligne, en toutes lettres, et une phrase toute prête.",
+        "de": "Liest den Zustand eines UrBackup-Clients für die nächsten Aktionen: fehlgeschlagen, überfällig, online, in Worten, und einen fertigen Satz.",
+        "es": "Lee el estado de un cliente de UrBackup para las siguientes acciones: fallido, con retraso, en línea, en palabras, y una frase lista."
+      },
+      "timeout_seconds": 30,
       "fields": [
         {
           "key": "device",
           "type": "select",
           "source": "devices",
-          "label": { "en": "Device", "fr": "Appareil" },
+          "label": {
+            "en": "Client",
+            "fr": "Client",
+            "de": "Client",
+            "es": "Cliente"
+          },
           "required": true
         }
       ],
       "outputs": [
         {
-          "key": "signalled",
+          "key": "failed",
           "type": "boolean",
-          "label": { "en": "Device signalled", "fr": "Appareil signalé" }
+          "label": {
+            "en": "Failed",
+            "fr": "En échec",
+            "de": "Fehlgeschlagen",
+            "es": "Fallido"
+          }
+        },
+        {
+          "key": "overdue",
+          "type": "boolean",
+          "label": {
+            "en": "Overdue",
+            "fr": "En retard",
+            "de": "Überfällig",
+            "es": "Con retraso"
+          }
+        },
+        {
+          "key": "online",
+          "type": "boolean",
+          "label": {
+            "en": "Online",
+            "fr": "En ligne",
+            "de": "Online",
+            "es": "En línea"
+          }
+        },
+        {
+          "key": "state",
+          "type": "string",
+          "label": {
+            "en": "State",
+            "fr": "État",
+            "de": "Zustand",
+            "es": "Estado"
+          }
+        },
+        {
+          "key": "name",
+          "type": "string",
+          "label": {
+            "en": "Client",
+            "fr": "Client",
+            "de": "Client",
+            "es": "Cliente"
+          }
+        },
+        {
+          "key": "last_success",
+          "type": "string",
+          "label": {
+            "en": "Last success",
+            "fr": "Dernière réussite",
+            "de": "Letzter Erfolg",
+            "es": "Último éxito"
+          }
+        },
+        {
+          "key": "hours_since_success",
+          "type": "number",
+          "label": {
+            "en": "Hours since last success",
+            "fr": "Heures depuis la dernière réussite",
+            "de": "Stunden seit letztem Erfolg",
+            "es": "Horas desde el último éxito"
+          }
+        },
+        {
+          "key": "sentence",
+          "type": "string",
+          "label": {
+            "en": "Sentence",
+            "fr": "Phrase",
+            "de": "Satz",
+            "es": "Frase"
+          }
+        }
+      ]
+    },
+    {
+      "key": "start_backup",
+      "label": {
+        "en": "Start a file backup",
+        "fr": "Lancer une sauvegarde de fichiers",
+        "de": "Dateisicherung starten",
+        "es": "Iniciar una copia de archivos"
+      },
+      "description": {
+        "en": "Starts an incremental file backup of the client now. Can be disabled in the configuration.",
+        "fr": "Lance maintenant une sauvegarde de fichiers incrémentale du client. Désactivable dans la configuration.",
+        "de": "Startet jetzt eine inkrementelle Dateisicherung des Clients. In der Konfiguration abschaltbar.",
+        "es": "Inicia ahora una copia incremental de archivos del cliente. Se puede desactivar en la configuración."
+      },
+      "timeout_seconds": 30,
+      "fields": [
+        {
+          "key": "device",
+          "type": "select",
+          "source": "devices",
+          "label": {
+            "en": "Client",
+            "fr": "Client",
+            "de": "Client",
+            "es": "Cliente"
+          },
+          "required": true
         }
       ]
     }
   ],
   "widgets": [
     {
-      "key": "demo_status",
-      "label": { "en": "Demo status", "fr": "État de la démo" },
-      "description": {
-        "en": "Live temperature and plug power, plug connection and observed location.",
-        "fr": "Température et puissance en direct, connexion de la prise, position observée."
+      "key": "urbackup",
+      "label": {
+        "en": "UrBackup",
+        "fr": "UrBackup",
+        "de": "UrBackup",
+        "es": "UrBackup"
       },
-      "icon": "activity",
-      "action_timeout_seconds": 15
+      "description": {
+        "en": "Failed clients first, then overdue ones, then the others, with their last backup.",
+        "fr": "Les clients en échec d'abord, puis en retard, puis les autres, avec leur dernière sauvegarde.",
+        "de": "Erst fehlgeschlagene Clients, dann überfällige, dann die anderen, mit letzter Sicherung.",
+        "es": "Primero los clientes fallidos, luego los retrasados y los demás, con su última copia."
+      },
+      "icon": "hard-drive",
+      "action_timeout_seconds": 30,
+      "settings": [
+        {
+          "key": "clients",
+          "type": "multi_select",
+          "source": "devices",
+          "label": {
+            "en": "Clients (empty: all)",
+            "fr": "Clients (vide : tous)",
+            "de": "Clients (leer: alle)",
+            "es": "Clientes (vacío: todos)"
+          },
+          "description": {
+            "en": "Empty: every client of the server. Only the devices added to Gladys can be chosen.",
+            "fr": "Vide : tous les clients du serveur. Seuls les appareils ajoutés à Gladys peuvent être choisis.",
+            "de": "Leer: alle Clients des Servers. Nur die in Gladys angelegten Geräte sind wählbar.",
+            "es": "Vacío: todos los clientes del servidor. Solo se pueden elegir los dispositivos añadidos a Gladys."
+          },
+          "required": false
+        }
+      ]
     }
   ]
 }

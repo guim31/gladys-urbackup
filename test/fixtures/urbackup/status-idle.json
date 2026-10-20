@@ -1,0 +1,68 @@
+{
+  "admin": true,
+  "allow_add_client": true,
+  "allow_extra_clients": true,
+  "allow_modify_clients": true,
+  "client_downloads": [
+    {
+      "id": 1,
+      "name": "laptop-anna"
+    },
+    {
+      "id": 2,
+      "name": "nas-bob"
+    }
+  ],
+  "curr_version_num": 2005003700,
+  "curr_version_str": "2.5.37",
+  "extra_clients": [],
+  "has_status_check": true,
+  "no_file_backups": false,
+  "no_images": false,
+  "remove_client": true,
+  "server_identity": "AbCdEfGhIjKlMnOpQrSt",
+  "server_pubkey": "AbCdEfGhIjKlMnOpQrSt#fingerprint=00:11:22:33:44:55:66:77:88:99:AA:BB:CC:DD:EE:FF:00:11:22:33:44:55:66:77:88:99:AA:BB:CC:DD:EE:FF",
+  "status": [
+    {
+      "client_version_string": "2.5.31",
+      "delete_pending": "",
+      "file_ok": true,
+      "groupname": "",
+      "id": 1,
+      "image_not_supported": true,
+      "image_ok": false,
+      "ip": "192.0.2.21",
+      "last_filebackup_issues": 0,
+      "lastbackup": 1792490480,
+      "lastbackup_image": 0,
+      "lastseen": 1792490548,
+      "name": "laptop-anna",
+      "online": true,
+      "os_simple": "linux",
+      "os_version_string": "Debian GNU/Linux 12 (bookworm); Kernel 6.8.0 x86_64",
+      "processes": [],
+      "status": 0,
+      "uid": "Zx8Yw7Vu6Ts5Rq4P"
+    },
+    {
+      "client_version_string": "",
+      "delete_pending": "",
+      "file_ok": false,
+      "groupname": "",
+      "id": 2,
+      "image_ok": false,
+      "ip": "-",
+      "last_filebackup_issues": 0,
+      "lastbackup": 0,
+      "lastbackup_image": 0,
+      "lastseen": 1792490418,
+      "name": "nas-bob",
+      "online": false,
+      "os_simple": "",
+      "os_version_string": "",
+      "processes": [],
+      "status": 0,
+      "uid": ""
+    }
+  ]
+}

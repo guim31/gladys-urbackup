@@ -1,0 +1,61 @@
+{
+  "lastacts": [
+    {
+      "backuptime": 1792490480,
+      "clientid": 1,
+      "del": false,
+      "details": "",
+      "duration": 0,
+      "id": 4,
+      "image": 0,
+      "incremental": 0,
+      "name": "laptop-anna",
+      "restore": 0,
+      "resumed": 0,
+      "size_bytes": 6
+    },
+    {
+      "backuptime": 1792489961,
+      "clientid": 1,
+      "del": false,
+      "details": "",
+      "duration": 2,
+      "id": 3,
+      "image": 0,
+      "incremental": 0,
+      "name": "laptop-anna",
+      "restore": 0,
+      "resumed": 0,
+      "size_bytes": 300000006
+    },
+    {
+      "backuptime": 1792489822,
+      "clientid": 1,
+      "del": false,
+      "details": "",
+      "duration": 1,
+      "id": 2,
+      "image": 0,
+      "incremental": 1,
+      "name": "laptop-anna",
+      "restore": 0,
+      "resumed": 0,
+      "size_bytes": 0
+    },
+    {
+      "backuptime": 1792489749,
+      "clientid": 1,
+      "del": false,
+      "details": "",
+      "duration": 1,
+      "id": 1,
+      "image": 0,
+      "incremental": 0,
+      "name": "laptop-anna",
+      "restore": 0,
+      "resumed": 0,
+      "size_bytes": 1000006
+    }
+  ],
+  "progress": []
+}
