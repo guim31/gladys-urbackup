@@ -1,6 +1,6 @@
 {
   "name": "gladys-urbackup",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "private": true,
   "description": "UrBackup clients (online, last backups, failures, overdue) in Gladys Assistant.",
   "type": "module",

@@ -8,8 +8,8 @@
     "de": "Deine UrBackup-Clients in Gladys: online, letzte Sicherungen, ein Alarm bei Fehler oder Verzug.",
     "es": "Sus clientes de UrBackup en Gladys: en línea, últimas copias y una alerta si una falla o se retrasa."
   },
-  "version": "1.0.0",
-  "docker_image": "ghcr.io/guim31/gladys-urbackup:1.0.0",
+  "version": "1.0.1",
+  "docker_image": "ghcr.io/guim31/gladys-urbackup:1.0.1",
   "gladys_version": ">=5.1.0",
   "cover_image": "https://raw.githubusercontent.com/guim31/gladys-urbackup/main/cover.png",
   "categories": ["services", "network"],
